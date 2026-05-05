@@ -2,300 +2,675 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Secure RBAC Firewall System</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Tenant RBAC Firewall</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #0f172a;
-        color: #e2e8f0;
-    }
+  :root {
+    --bg: #080c14;
+    --surface: #0e1623;
+    --surface2: #152032;
+    --border: rgba(99,179,255,0.12);
+    --accent: #3b9eff;
+    --accent2: #00e5a0;
+    --danger: #ff4f4f;
+    --warn: #ffb830;
+    --text: #dce9ff;
+    --text2: #7a96be;
+    --text3: #3d5478;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
 
-    .login-card {
-        background: #ffffff;
-        color: #000;
-        width: 350px;
-        margin: 100px auto;
-        padding: 30px;
-        border-radius: 12px;
-        text-align: center;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    input, button, select {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-    }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
 
-    button {
-        background: #38bdf8;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.06) 2px,
+      rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
 
-    button:hover {
-        background: #0ea5e9;
-    }
+  /* Login screen */
+  #loginScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+  }
 
-    h1 { color: #38bdf8; text-align:center; }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    border-radius: 4px;
+    padding: 40px;
+    width: 360px;
+  }
 
-    .container {
-        display: flex;
-        gap: 20px;
-        padding: 20px;
-    }
+  .login-card .brand {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
 
-    .panel {
-        flex: 1;
-        background: #1e293b;
-        padding: 15px;
-        border-radius: 10px;
-    }
+  .login-card h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
 
-    .log {
-        height: 250px;
-        overflow-y: auto;
-        background: #0b1220;
-        padding: 10px;
-        border-radius: 8px;
-    }
+  label {
+    display: block;
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
 
-    .ok { color: #22c55e; }
-    .danger { color: #ef4444; }
+  input[type="text"], input[type="password"], select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
 
-    /* ALERT */
-    .modal {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
+  input:focus, select:focus {
+    border-color: var(--accent);
+  }
 
-    .modal-box {
-        background: #0b1220;
-        padding: 25px;
-        border-radius: 12px;
-        width: 320px;
-        text-align: center;
-    }
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
 
-    /* ADMIN PANEL */
-    .admin-panel {
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 400px;
-        background: #111827;
-        border: 2px solid #22c55e;
-        padding: 20px;
-        border-radius: 12px;
-        z-index: 10000;
-    }
+  .btn:hover {
+    background: var(--accent);
+    color: #000;
+  }
 
+  .btn.full { width: 100%; }
+
+  .btn.danger-btn {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  .btn.danger-btn:hover {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .btn.success-btn {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+  .btn.success-btn:hover {
+    background: var(--accent2);
+    color: #000;
+  }
+
+  /* Dashboard */
+  #dashboard { display: none; }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar .brand {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .topbar h1 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  /* Stat bar */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .stat-card.s-allow::before { background: var(--accent2); }
+  .stat-card.s-block::before { background: var(--danger); }
+  .stat-card.s-risk::before { background: var(--warn); }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .s-allow .stat-num { color: var(--accent2); }
+  .s-block .stat-num { color: var(--danger); }
+  .s-risk .stat-num { color: var(--warn); }
+
+  .stat-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  /* Grid layout */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px;
+  }
+
+  .panel.full { grid-column: 1 / -1; }
+
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Role boxes */
+  .role-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--text3);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .role-box.r-admin { border-left-color: var(--danger); }
+  .role-box.r-manager { border-left-color: var(--warn); }
+  .role-box.r-user { border-left-color: var(--accent); }
+  .role-box.r-guest { border-left-color: var(--text3); }
+
+  .role-name {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .role-detail {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: var(--mono);
+  }
+
+  .perm-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    margin-right: 4px;
+    margin-top: 4px;
+  }
+
+  .p-read { background: rgba(59,158,255,0.15); color: var(--accent); border: 1px solid rgba(59,158,255,0.3); }
+  .p-write { background: rgba(255,184,48,0.15); color: var(--warn); border: 1px solid rgba(255,184,48,0.3); }
+  .p-delete { background: rgba(255,79,79,0.15); color: var(--danger); border: 1px solid rgba(255,79,79,0.3); }
+  .p-admin { background: rgba(0,229,160,0.15); color: var(--accent2); border: 1px solid rgba(0,229,160,0.3); }
+
+  /* Log */
+  .log-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px;
+    height: 200px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .log-box::-webkit-scrollbar { width: 4px; }
+  .log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .log-ok { color: var(--accent2); }
+  .log-block { color: var(--danger); }
+  .log-ts { color: var(--text3); margin-right: 8px; }
+
+  .alert-box {
+    background: rgba(255,79,79,0.05);
+    border: 1px solid rgba(255,79,79,0.2);
+    border-radius: 3px;
+    padding: 12px;
+    max-height: 140px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--danger);
+  }
+
+  .no-alerts { color: var(--text3); }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  /* Blinking cursor */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    animation: blink 1s infinite;
+    vertical-align: middle;
+  }
+
+  /* Pulse animation for new log entries */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .new-entry { animation: fadeIn 0.2s ease; }
+
+  /* Admin modal overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--accent2);
+    border-top: 2px solid var(--accent2);
+    border-radius: 4px;
+    padding: 28px;
+    width: 360px;
+  }
+
+  .modal h2 {
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .modal p {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal p:last-of-type { border-bottom: none; }
+
+  .modal .btn-row { margin-top: 16px; }
+
+  select option {
+    background: var(--surface);
+    color: var(--text);
+  }
 </style>
 </head>
-
 <body>
 
-<div id="app">
-    <div class="login-card">
-        <h2>🔐 Login</h2>
-        <input id="username" placeholder="Username">
-        <input id="password" type="password" placeholder="Password">
-        <button onclick="login()">Login</button>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="brand">// SYSTEM</div>
+    <h1>RBAC Firewall <span class="cursor"></span></h1>
+    <label>Username</label>
+    <input type="text" id="username" placeholder="operator@tenant.a">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••">
+    <button class="btn full" onclick="login()">Authenticate →</button>
+    <div style="margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--text3)">
+      Multi-Tenant SaaS Security Layer v2.4
     </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+  <div class="topbar">
+    <div>
+      <div class="brand">// RBAC FIREWALL SYSTEM</div>
+      <h1>Security Control Dashboard</h1>
+    </div>
+    <button class="btn danger-btn" onclick="logout()">↩ Logout</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card s-allow">
+      <div class="stat-num" id="sAllow">0</div>
+      <div class="stat-label">Requests Allowed</div>
+    </div>
+    <div class="stat-card s-block">
+      <div class="stat-num" id="sBlock">0</div>
+      <div class="stat-label">Requests Blocked</div>
+    </div>
+    <div class="stat-card s-risk">
+      <div class="stat-num" id="sRisk">0</div>
+      <div class="stat-label">Risk Events</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Simulator -->
+    <div class="panel">
+      <div class="panel-title">// Request Simulator</div>
+      <label>User Identity</label>
+      <select id="uSel">
+        <option>Alice (Tenant A - User)</option>
+        <option>Bob (Tenant A - Manager)</option>
+        <option>Eve (Tenant B - Guest)</option>
+        <option>Admin (Tenant A - Admin)</option>
+      </select>
+      <label>Action</label>
+      <select id="aSel">
+        <option>read:data</option>
+        <option>write:data</option>
+        <option>delete:data</option>
+        <option>admin:panel</option>
+      </select>
+      <div class="btn-row">
+        <button class="btn" onclick="sendReq()">Send Request</button>
+        <button class="btn success-btn" onclick="runRandom()">Random →</button>
+      </div>
+    </div>
+
+    <!-- Role Hierarchy -->
+    <div class="panel">
+      <div class="panel-title">// Role Hierarchy</div>
+      <label>Tenant</label>
+      <select id="tSel" onchange="renderRoles()">
+        <option>Tenant-A</option>
+        <option>Tenant-B</option>
+      </select>
+      <div id="roles"></div>
+    </div>
+
+    <!-- Access Log -->
+    <div class="panel full">
+      <div class="panel-title">// Access Log</div>
+      <div class="log-box" id="log">
+        <span style="color:var(--text3)">Awaiting requests...</span>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="panel full">
+      <div class="panel-title">// Security Alerts</div>
+      <div class="alert-box" id="alerts">
+        <span class="no-alerts">No alerts detected.</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-
-let token = "";
-
-/* LOGIN */
-function login() {
-    let u = document.getElementById("username").value;
-    let p = document.getElementById("password").value;
-
-    if (u && p) {
-        token = "secure-token";
-        showDashboard();
-    }
-}
-
-/* BACK */
-function backToLogin() {
-    location.reload();
-}
-
-/* DASHBOARD */
-function showDashboard() {
-document.getElementById("app").innerHTML = `
-
-<button onclick="backToLogin()" style="
-    position:absolute;
-    top:10px;
-    left:10px;
-    width:auto;
-    padding:8px 12px;
-    background:#38bdf8;
-    border:none;
-    color:white;
-    border-radius:6px;
-">
-⬅ Back
-</button>
-
-<h1>Multi-Tenant SaaS Firewall</h1>
-
-<div class="container">
-
-    <div class="panel">
-
-        <h3>Request Simulator</h3>
-
-        <select id="user">
-            <option>Alice (Tenant A - User)</option>
-            <option>Bob (Tenant A - Manager)</option>
-            <option>Eve (Tenant B - Guest)</option>
-            <option>Admin (Tenant A - Admin)</option>
-        </select>
-
-        <select id="action">
-            <option>read:data</option>
-            <option>write:data</option>
-            <option>delete:data</option>
-            <option>admin:panel</option>
-        </select>
-
-        <button onclick="sendRequest()">Send Request</button>
-
-        <h3>Log</h3>
-        <div class="log" id="log"></div>
-
-    </div>
-
-</div>
-`;
-}
-
-/* USERS */
 const users = {
-    "Alice (Tenant A - User)": { tenant: "A", role: "user" },
-    "Bob (Tenant A - Manager)": { tenant: "A", role: "manager" },
-    "Eve (Tenant B - Guest)": { tenant: "B", role: "guest" },
-    "Admin (Tenant A - Admin)": { tenant: "A", role: "admin" }
+  "Alice (Tenant A - User)":   { tenant: "A", role: "user" },
+  "Bob (Tenant A - Manager)":  { tenant: "A", role: "manager" },
+  "Eve (Tenant B - Guest)":    { tenant: "B", role: "guest" },
+  "Admin (Tenant A - Admin)":  { tenant: "A", role: "admin" }
 };
 
-/* ROLES */
-const tenants = {
-    A: {
-        roles: {
-            user: { level: 1 },
-            manager: { level: 3 },
-            admin: { level: 5 }
-        }
-    },
-    B: {
-        roles: {
-            guest: { level: 0 },
-            user: { level: 1 },
-            admin: { level: 5 }
-        }
-    }
+const tenantRoles = {
+  A: {
+    admin:   { level: 5, inherits: ["manager"], perms: ["Read","Write","Delete","Admin"] },
+    manager: { level: 3, inherits: ["user"],    perms: ["Read","Write"] },
+    user:    { level: 1, inherits: [],          perms: ["Read"] }
+  },
+  B: {
+    admin: { level: 5, inherits: ["user"], perms: ["Read","Write","Admin"] },
+    user:  { level: 1, inherits: ["guest"], perms: ["Read"] },
+    guest: { level: 0, inherits: [],        perms: [] }
+  }
 };
 
 const actionLevels = {
-    "read:data": 1,
-    "write:data": 3,
-    "delete:data": 4,
-    "admin:panel": 5
+  "read:data": 1,
+  "write:data": 3,
+  "delete:data": 4,
+  "admin:panel": 5
 };
 
-/* ALERT */
-function showAlert(title, msg, type, callback) {
+let cAllow = 0, cBlock = 0, cRisk = 0;
+let logLines = [], alertLines = [];
 
-    let modal = document.createElement("div");
-
-    modal.className = "modal";
-
-    modal.innerHTML = `
-        <div class="modal-box">
-            <h2>${title}</h2>
-            <p>${msg}</p>
-            <button onclick="closeAlert(this, '${callback}')">OK</button>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
+function getEffective(role, map, vis = new Set()) {
+  if (!map[role] || vis.has(role)) return [];
+  vis.add(role);
+  let p = [...map[role].perms];
+  map[role].inherits.forEach(r => p = p.concat(getEffective(r, map, vis)));
+  return [...new Set(p)];
 }
 
-/* CLOSE ALERT */
-function closeAlert(btn, callback) {
-    btn.parentElement.parentElement.remove();
+function permBadge(p) {
+  const cls = { Read: "p-read", Write: "p-write", Delete: "p-delete", Admin: "p-admin" };
+  return `<span class="perm-badge ${cls[p] || ''}">${p}</span>`;
+}
 
-    if (callback === "admin") {
-        openAdminPanel();
+function renderRoles() {
+  const t = document.getElementById("tSel").value.replace("Tenant-", "");
+  const map = tenantRoles[t];
+  let html = "";
+  for (let role in map) {
+    const eff = getEffective(role, map);
+    const cls = "r-" + role;
+    html += `
+      <div class="role-box ${cls}">
+        <div class="role-name">${role.toUpperCase()}</div>
+        <div class="role-detail">inherits: ${map[role].inherits.join(", ") || "—"} &nbsp;|&nbsp; level: ${map[role].level}</div>
+        <div>${eff.map(permBadge).join("") || '<span style="color:var(--text3);font-size:11px;font-family:var(--mono)">no permissions</span>'}</div>
+      </div>`;
+  }
+  document.getElementById("roles").innerHTML = html;
+}
+
+function detect(role, action, tenant) {
+  const map = tenantRoles[tenant];
+  const lvl = map[role]?.level || 0;
+  const req = actionLevels[action] || 0;
+  const eff = getEffective(role, map);
+  const direct = map[role]?.perms || [];
+  let score = 0, reasons = [];
+
+  if (req > lvl) { score += 60; reasons.push("insufficient privilege"); }
+  if (!direct.includes("Delete") && eff.includes("Delete") && role !== "admin") {
+    score += 30; reasons.push("delete via inheritance");
+  }
+  if (role === "guest" && req > 0) { score += 20; reasons.push("guest → protected resource"); }
+  if (action === "admin:panel" && role !== "admin") { score += 40; reasons.push("admin panel escalation attempt"); }
+
+  return { allowed: req <= lvl, score, reasons };
+}
+
+function ts() {
+  return new Date().toLocaleTimeString("en-US", { hour12: false });
+}
+
+function addLog(cls, msg) {
+  logLines.unshift(`<div class="new-entry ${cls}"><span class="log-ts">[${ts()}]</span>${msg}</div>`);
+  if (logLines.length > 60) logLines.pop();
+  document.getElementById("log").innerHTML = logLines.join("");
+}
+
+function addAlert(msg) {
+  alertLines.unshift(`<div class="new-entry"><span class="log-ts">[${ts()}]</span>${msg}</div>`);
+  if (alertLines.length > 20) alertLines.pop();
+  document.getElementById("alerts").innerHTML = alertLines.join("");
+}
+
+function updateStats() {
+  document.getElementById("sAllow").textContent = cAllow;
+  document.getElementById("sBlock").textContent = cBlock;
+  document.getElementById("sRisk").textContent = cRisk;
+}
+
+function processReq(userKey, action) {
+  const u = users[userKey];
+  const r = detect(u.role, action, u.tenant);
+  const shortUser = userKey.split(" ")[0];
+
+  if (r.allowed) {
+    cAllow++;
+    addLog("log-ok", ` ✔ ALLOW &nbsp;&nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action}`);
+    if (u.role === "admin" && action === "admin:panel") {
+      showAdminPanel();
     }
+  } else {
+    cBlock++;
+    addLog("log-block", ` ✖ BLOCK &nbsp;&nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action}`);
+  }
+
+  if (r.score > 40) {
+    cRisk++;
+    addAlert(` ⚠ RISK:${r.score} — ${shortUser}: ${r.reasons.join("; ")}`);
+  }
+
+  updateStats();
 }
 
-/* ADMIN PANEL */
-function openAdminPanel() {
-
-    let panel = document.createElement("div");
-
-    panel.className = "admin-panel";
-
-    panel.innerHTML = `
-        <h2>🛡️ Admin Control Panel</h2>
-        <p>✔ View Logs</p>
-        <p>✔ Manage Roles</p>
-        <p>✔ Detect Escalations</p>
-        <button onclick="this.parentElement.remove()">Close</button>
-    `;
-
-    document.body.appendChild(panel);
+function sendReq() {
+  processReq(document.getElementById("uSel").value, document.getElementById("aSel").value);
 }
 
-/* REQUEST */
-function sendRequest() {
-
-    let userKey = document.getElementById("user").value;
-    let action = document.getElementById("action").value;
-
-    let user = users[userKey];
-    let required = actionLevels[action];
-
-    let log = document.getElementById("log");
-
-    let level = tenants[user.tenant].roles[user.role].level;
-
-    if (required <= level) {
-
-        log.innerHTML += `<div class="ok">✔ Allowed: ${userKey} → ${action}</div>`;
-
-        showAlert("ACCESS GRANTED", "Request executed successfully", "ok",
-            user.role === "admin" ? "admin" : ""
-        );
-
-    } else {
-
-        log.innerHTML += `<div class="danger">⛔ ACCESS BLOCKED / ESCALATION</div>`;
-
-        showAlert("ACCESS BLOCKED", "Security firewall stopped request", "danger", "");
-    }
-
-    log.scrollTop = log.scrollHeight;
+function runRandom() {
+  const uKeys = Object.keys(users);
+  const acts = Object.keys(actionLevels);
+  processReq(
+    uKeys[Math.floor(Math.random() * uKeys.length)],
+    acts[Math.floor(Math.random() * acts.length)]
+  );
 }
 
+function showAdminPanel() {
+  const o = document.createElement("div");
+  o.className = "overlay";
+  o.innerHTML = `
+    <div class="modal">
+      <h2>// Admin Control Panel</h2>
+      <p>✔ View audit logs</p>
+      <p>✔ Manage roles & permissions</p>
+      <p>✔ Detect privilege escalations</p>
+      <p>✔ Cross-tenant access control</p>
+      <p>✔ System configuration</p>
+      <div class="btn-row">
+        <button class="btn success-btn" onclick="this.closest('.overlay').remove()">Close Panel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(o);
+}
+
+function login() {
+  const u = document.getElementById("username").value;
+  const p = document.getElementById("password").value;
+  if (u && p) {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    renderRoles();
+  }
+}
+
+function logout() {
+  location.reload();
+}
+
+renderRoles();
 </script>
-
 </body>
 </html>
