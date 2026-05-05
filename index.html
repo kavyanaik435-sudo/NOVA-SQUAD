@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multi-Tenant RBAC Firewall</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 { color: #38bdf8; }
+    .container { display: flex; gap: 20px; }
+    .panel {
+        flex: 1;
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .log {
+        height: 300px;
+        overflow-y: auto;
+        background: #0b1220;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .danger { color: #ef4444; }
+    .ok { color: #22c55e; }
+    button {
+        margin-top: 10px;
+        padding: 8px;
+        background: #38bdf8;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    input, select {
+        padding: 6px;
+        margin: 5px 0;
+        width: 100%;
+    }
+    canvas {
+        background: #0b1220;
+        border-radius: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Multi-Tenant SaaS Permission Firewall</h1>
+
+<div class="container">
+
+    <!-- LEFT: REQUEST SIMULATOR -->
+    <div class="panel">
+        <h3>Request Simulator</h3>
+
+        <label>User</label>
+        <select id="user">
+            <option>Alice (Tenant A - User)</option>
+            <option>Bob (Tenant A - Manager)</option>
+            <option>Eve (Tenant B - Guest)</option>
+        </select>
+
+        <label>Action</label>
+        <select id="action">
+            <option>read:data</option>
+            <option>write:data</option>
+            <option>delete:data</option>
+            <option>admin:panel</option>
+        </select>
+
+        <button onclick="sendRequest()">Send Request</button>
+
+        <h3>Decision Log</h3>
+        <div class="log" id="log"></div>
+    </div>
+
+    <!-- RIGHT: GRAPH -->
+    <div class="panel">
+        <h3>Permission Graph (Tenant-aware)</h3>
+        <canvas id="graph" width="400" height="300"></canvas>
+
+        <p style="margin-top:10px;font-size:13px;">
+            Red edges = potential escalation paths<br>
+            Green nodes = safe roles
+        </p>
+    </div>
+
+</div>
+
+<script>
+// ------------------------
+// MOCK RBAC SYSTEM
+// ------------------------
+const tenants = {
+    A: {
+        roles: {
+            user: { level: 1, inherits: [] },
+            manager: { level: 3, inherits: ["user"] },
+            admin: { level: 5, inherits: ["manager"] }
+        }
+    },
+    B: {
+        roles: {
+            guest: { level: 0, inherits: [] },
+            user: { level: 1, inherits: ["guest"] },
+            admin: { level: 5, inherits: ["user"] }
+        }
+    }
+};
+
+// Users
+const users = {
+    "Alice (Tenant A - User)": { tenant: "A", role: "user" },
+    "Bob (Tenant A - Manager)": { tenant: "A", role: "manager" },
+    "Eve (Tenant B - Guest)": { tenant: "B", role: "guest" }
+};
+
+// Permissions required level
+const actionLevels = {
+    "read:data": 1,
+    "write:data": 3,
+    "delete:data": 4,
+    "admin:panel": 5
+};
+
+// ------------------------
+// ESCALATION DETECTION
+// ------------------------
+function detectEscalation(tenant, role, targetLevel) {
+    let current = tenants[tenant].roles[role];
+    let visited = new Set();
+
+    function dfs(r) {
+        if (visited.has(r)) return false;
+        visited.add(r);
+
+        let node = tenants[tenant].roles[r];
+        if (!node) return false;
+
+        if (node.level >= targetLevel && node.level > current.level) {
+            return true;
+        }
+
+        for (let child of node.inherits) {
+            if (dfs(child)) return true;
+        }
+        return false;
+    }
+
+    return dfs(role);
+}
+
+// ------------------------
+// REQUEST HANDLER
+// ------------------------
+function sendRequest() {
+    let userKey = document.getElementById("user").value;
+    let action = document.getElementById("action").value;
+
+    let user = users[userKey];
+    let required = actionLevels[action];
+
+    let log = document.getElementById("log");
+
+    let escalation = detectEscalation(user.tenant, user.role, required);
+
+    if (required <= tenants[user.tenant].roles[user.role].level) {
+        log.innerHTML += `<div class="ok">✔ Allowed: ${userKey} → ${action}</div>`;
+    } 
+    else if (escalation) {
+        log.innerHTML += `<div class="danger">⛔ BLOCKED (Escalation detected): ${userKey} → ${action}</div>`;
+    } 
+    else {
+        log.innerHTML += `<div class="danger">⛔ DENIED: insufficient permissions</div>`;
+    }
+
+    log.scrollTop = log.scrollHeight;
+}
+
+// ------------------------
+// SIMPLE GRAPH RENDER
+// ------------------------
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+function drawGraph() {
+    ctx.clearRect(0,0,400,300);
+
+    let nodes = [
+        {x:80,y:50,label:"User"},
+        {x:200,y:50,label:"Manager"},
+        {x:320,y:50,label:"Admin"}
+    ];
+
+    // edges (potential escalation paths)
+    ctx.strokeStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(80,50); ctx.lineTo(200,50);
+    ctx.lineTo(320,50);
+    ctx.stroke();
+
+    nodes.forEach(n=>{
+        ctx.fillStyle = "#22c55e";
+        ctx.beginPath();
+        ctx.arc(n.x,n.y,20,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle = "#fff";
+        ctx.fillText(n.label,n.x-20,n.y+40);
+    });
+}
+
+drawGraph();
+</script>
+
+</body>
+</html>

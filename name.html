@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Firewall</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .role-btn {
+            margin: 5px;
+            width: 30%;
+        }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform:translateY(10px);}
+            to {opacity:1; transform:translateY(0);}
+        }
+    </style>
+</head>
+<body>
+
+<div class="card" id="app"></div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+let token = "";
+
+// ---------------- LOGIN ----------------
+function showLogin(error="") {
+    document.getElementById("app").innerHTML = `
+        <h2>🔐 Login</h2>
+        <input id="username" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div class="error">${error}</div>
+    `;
+}
+
+async function login() {
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+
+    let res = await fetch(`${API}/login?username=${u}&password=${p}`, { method: "POST" });
+    let data = await res.json();
+
+    if (res.ok) {
+        token = data.token;
+        showRole();
+    } else {
+        showLogin(data.detail);
+    }
+}
+
+// ---------------- ROLE ----------------
+function showRole(error="") {
+    document.getElementById("app").innerHTML = `
+        <h2>🎭 Select Role</h2>
+        <button class="role-btn" onclick="selectRole('user')">User</button>
+        <button class="role-btn" onclick="selectRole('manager')">Manager</button>
+        <button class="role-btn" onclick="selectRole('admin')">Admin</button>
+        <div class="error">${error}</div>
+    `;
+}
+
+async function selectRole(role) {
+    let res = await fetch(`${API}/select-role?role=${role}`, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await res.json();
+
+    if (res.ok) {
+        showSecurity();
+    } else {
+        showRole(data.detail);
+    }
+}
+
+// ---------------- SECURITY ----------------
+function showSecurity(error="") {
+    document.getElementById("app").innerHTML = `
+        <h2>🛡 Security Check</h2>
+        <input id="q1" placeholder="2 + 2">
+        <input id="q2" placeholder="Capital of India">
+        <input id="q3" placeholder="5 × 3">
+        <input id="q4" placeholder="Sun rises east (yes/no)">
+        <input id="q5" placeholder="10 ÷ 2">
+        <button onclick="submitAnswers()">Verify</button>
+        <div class="error">${error}</div>
+    `;
+}
+
+async function submitAnswers() {
+    let answers = [
+        document.getElementById("q1").value,
+        document.getElementById("q2").value,
+        document.getElementById("q3").value,
+        document.getElementById("q4").value,
+        document.getElementById("q5").value
+    ];
+
+    let res = await fetch(`${API}/security-check`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(answers)
+    });
+
+    let data = await res.json();
+
+    if (res.ok) {
+        showSuccess();
+    } else {
+        showSecurity(data.detail);
+    }
+}
+
+// ---------------- RESULT ----------------
+function showSuccess() {
+    document.getElementById("app").innerHTML = `
+        <h2 class="success">✅ Access Granted</h2>
+        <p>Secure login successful</p>
+        <button onclick="showLogin()">Logout</button>
+    `;
+}
+
+// start
+showLogin();
+</script>
+
+</body>
+</html>

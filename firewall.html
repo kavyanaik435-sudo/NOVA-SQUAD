@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Secure RBAC Firewall System</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #0f172a;
+        color: #e2e8f0;
+    }
+
+    .login-card {
+        background: #ffffff;
+        color: #000;
+        width: 350px;
+        margin: 100px auto;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    input, button, select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background: #38bdf8;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #0ea5e9;
+    }
+
+    h1 { color: #38bdf8; text-align:center; }
+
+    .container {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .panel {
+        flex: 1;
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .log {
+        height: 300px;
+        overflow-y: auto;
+        background: #0b1220;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .danger { color: #ef4444; }
+    .ok { color: #22c55e; }
+
+    canvas {
+        background: #0b1220;
+        border-radius: 10px;
+    }
+
+    /* ALERT */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .modal-box {
+        background: #0b1220;
+        padding: 25px;
+        border-radius: 12px;
+        width: 320px;
+        text-align: center;
+        border: 2px solid #38bdf8;
+    }
+
+    .danger-box { border-color: #ef4444; }
+    .ok-box { border-color: #22c55e; }
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+    <div class="login-card">
+        <h2>🔐 Login</h2>
+        <input id="username" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<script>
+let token = "";
+
+/* LOGIN */
+function login() {
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+
+    if (u && p) {
+        token = "secure-token";
+        showDashboard();
+    }
+}
+
+/* BACK BUTTON */
+function backToLogin() {
+    location.reload();
+}
+
+/* DASHBOARD */
+function showDashboard() {
+document.getElementById("app").innerHTML = `
+
+<button onclick="backToLogin()" style="
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:auto;
+    padding:8px 12px;
+    background:#38bdf8;
+    border:none;
+    color:white;
+    border-radius:6px;
+">
+⬅ Back
+</button>
+
+<h1>Multi-Tenant SaaS Firewall</h1>
+
+<div class="container">
+
+    <div class="panel">
+
+        <h3>Request Simulator</h3>
+
+        <select id="user">
+            <option>Alice (Tenant A - User)</option>
+            <option>Bob (Tenant A - Manager)</option>
+            <option>Eve (Tenant B - Guest)</option>
+        </select>
+
+        <select id="action">
+            <option>read:data</option>
+            <option>write:data</option>
+            <option>delete:data</option>
+            <option>admin:panel</option>
+        </select>
+
+        <button onclick="sendRequest()">Send Request</button>
+
+        <h3>Log</h3>
+        <div class="log" id="log"></div>
+
+    </div>
+
+</div>
+`;
+}
+
+/* USERS */
+const users = {
+    "Alice (Tenant A - User)": { tenant: "A", role: "user" },
+    "Bob (Tenant A - Manager)": { tenant: "A", role: "manager" },
+    "Eve (Tenant B - Guest)": { tenant: "B", role: "guest" }
+};
+
+/* LEVELS */
+const tenants = {
+    A: {
+        roles: {
+            user: { level: 1, inherits: [] },
+            manager: { level: 3, inherits: ["user"] },
+            admin: { level: 5, inherits: ["manager"] }
+        }
+    },
+    B: {
+        roles: {
+            guest: { level: 0, inherits: [] },
+            user: { level: 1, inherits: ["guest"] },
+            admin: { level: 5, inherits: ["user"] }
+        }
+    }
+};
+
+const actionLevels = {
+    "read:data": 1,
+    "write:data": 3,
+    "delete:data": 4,
+    "admin:panel": 5
+};
+
+/* ALERT */
+function showAlert(title, message, type) {
+
+    let color = type === "ok" ? "#22c55e" : "#ef4444";
+
+    let modal = document.createElement("div");
+    modal.className = "modal";
+
+    modal.innerHTML = `
+        <div class="modal-box">
+            <h2 style="color:${color}">${title}</h2>
+            <p>${message}</p>
+            <button onclick="this.parentElement.parentElement.remove()">OK</button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+/* ESCALATION */
+function detectEscalation(tenant, role, targetLevel) {
+    let current = tenants[tenant].roles[role];
+    return targetLevel > current.level;
+}
+
+/* REQUEST */
+function sendRequest() {
+
+    let userKey = document.getElementById("user").value;
+    let action = document.getElementById("action").value;
+
+    let user = users[userKey];
+    let required = actionLevels[action];
+
+    let log = document.getElementById("log");
+
+    let escalation = detectEscalation(user.tenant, user.role, required);
+
+    if (required <= tenants[user.tenant].roles[user.role].level) {
+
+        log.innerHTML += `<div class="ok">✔ Allowed: ${userKey} → ${action}</div>`;
+        showAlert("ACCESS GRANTED", "Request executed", "ok");
+
+    } else if (escalation) {
+
+        log.innerHTML += `<div class="danger">⛔ PRIVILEGE ESCALATION DETECTED</div>`;
+        showAlert("ESCALATION DETECTED", "Access blocked", "danger");
+
+    } else {
+
+        log.innerHTML += `<div class="danger">⛔ ACCESS BLOCKED</div>`;
+        showAlert("ACCESS BLOCKED", "No permission", "danger");
+    }
+
+    log.scrollTop = log.scrollHeight;
+}
+
+</script>
+
+</body>
+</html>
