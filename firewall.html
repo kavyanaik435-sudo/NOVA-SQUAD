@@ -21,383 +21,158 @@
     --mono: 'Space Mono', monospace;
     --sans: 'DM Sans', sans-serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px; }
+  body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px); pointer-events: none; z-index: 9999; }
 
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px;
-  }
+  /* LOGIN */
+  #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 80vh; }
+  .login-card { background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--accent); border-radius: 4px; padding: 40px; width: 380px; }
+  .login-card .brand { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+  .login-card h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .login-card .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+  label { display: block; font-size: 11px; font-family: var(--mono); letter-spacing: 1px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; }
+  input[type="text"], input[type="password"], select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: var(--mono); font-size: 13px; padding: 10px 12px; margin-bottom: 16px; outline: none; transition: border-color 0.2s; }
+  input:focus, select:focus { border-color: var(--accent); }
+  .login-hint { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-bottom: 16px; padding: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; line-height: 1.8; }
 
-  /* Scanline overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.06) 2px,
-      rgba(0,0,0,0.06) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  /* Login screen */
-  #loginScreen {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 80vh;
-  }
-
-  .login-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: 2px solid var(--accent);
-    border-radius: 4px;
-    padding: 40px;
-    width: 360px;
-  }
-
-  .login-card .brand {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .login-card h1 {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 28px;
-    color: var(--text);
-  }
-
-  label {
-    display: block;
-    font-size: 11px;
-    font-family: var(--mono);
-    letter-spacing: 1px;
-    color: var(--text2);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-  }
-
-  input[type="text"], input[type="password"], select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 10px 12px;
-    margin-bottom: 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  input:focus, select:focus {
-    border-color: var(--accent);
-  }
-
-  .btn {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 10px 20px;
-    border: 1px solid var(--accent);
-    border-radius: 3px;
-    background: transparent;
-    color: var(--accent);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn:hover {
-    background: var(--accent);
-    color: #000;
-  }
-
+  /* BUTTONS */
+  .btn { font-family: var(--mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; padding: 10px 20px; border: 1px solid var(--accent); border-radius: 3px; background: transparent; color: var(--accent); cursor: pointer; transition: all 0.15s; }
+  .btn:hover { background: var(--accent); color: #000; }
   .btn.full { width: 100%; }
+  .btn.danger-btn { border-color: var(--danger); color: var(--danger); }
+  .btn.danger-btn:hover { background: var(--danger); color: #fff; }
+  .btn.success-btn { border-color: var(--accent2); color: var(--accent2); }
+  .btn.success-btn:hover { background: var(--accent2); color: #000; }
+  .btn.warn-btn { border-color: var(--warn); color: var(--warn); }
+  .btn.warn-btn:hover { background: var(--warn); color: #000; }
 
-  .btn.danger-btn {
-    border-color: var(--danger);
-    color: var(--danger);
-  }
-  .btn.danger-btn:hover {
-    background: var(--danger);
-    color: #fff;
-  }
-
-  .btn.success-btn {
-    border-color: var(--accent2);
-    color: var(--accent2);
-  }
-  .btn.success-btn:hover {
-    background: var(--accent2);
-    color: #000;
-  }
-
-  /* Dashboard */
+  /* DASHBOARD */
   #dashboard { display: none; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .topbar .brand { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; }
+  .topbar h1 { font-size: 20px; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .user-badge { font-family: var(--mono); font-size: 11px; color: var(--text2); padding: 6px 12px; border: 1px solid var(--border); border-radius: 3px; }
 
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .topbar .brand {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-  }
-
-  .topbar h1 {
-    font-size: 20px;
-    font-weight: 600;
-  }
-
-  /* Stat bar */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .stat-card.s-allow::before { background: var(--accent2); }
   .stat-card.s-block::before { background: var(--danger); }
   .stat-card.s-risk::before { background: var(--warn); }
-
-  .stat-num {
-    font-family: var(--mono);
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
+  .stat-card.s-info::before { background: var(--accent); }
+  .stat-card.s-total::before { background: var(--text2); }
+  .stat-card.s-rate::before { background: #b44fff; }
+  .stat-num { font-family: var(--mono); font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
   .s-allow .stat-num { color: var(--accent2); }
   .s-block .stat-num { color: var(--danger); }
   .s-risk .stat-num { color: var(--warn); }
+  .s-info .stat-num { color: var(--accent); }
+  .s-total .stat-num { color: var(--text2); }
+  .s-rate .stat-num { color: #b44fff; }
+  .stat-label { font-size: 10px; font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
 
-  .stat-label {
-    font-size: 11px;
-    font-family: var(--mono);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text3);
-  }
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+  .tab { font-family: var(--mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 16px; border: 1px solid transparent; border-bottom: none; border-radius: 3px 3px 0 0; background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; position: relative; bottom: -1px; }
+  .tab:hover { color: var(--text2); }
+  .tab.active { border-color: var(--border); border-bottom-color: var(--bg); background: var(--surface); color: var(--accent); }
 
-  /* Grid layout */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
 
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 18px;
-  }
-
+  /* GRID */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px; }
   .panel.full { grid-column: 1 / -1; }
+  .panel-title { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title span { color: var(--text3); font-size: 10px; }
 
-  .panel-title {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* Role boxes */
-  .role-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-left: 2px solid var(--text3);
-    border-radius: 3px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    font-size: 13px;
-  }
-
+  /* ROLE BOXES */
+  .role-box { background: var(--surface2); border: 1px solid var(--border); border-left: 2px solid var(--text3); border-radius: 3px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; }
   .role-box.r-admin { border-left-color: var(--danger); }
   .role-box.r-manager { border-left-color: var(--warn); }
   .role-box.r-user { border-left-color: var(--accent); }
   .role-box.r-guest { border-left-color: var(--text3); }
-
-  .role-name {
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: 13px;
-    margin-bottom: 4px;
-  }
-
-  .role-detail {
-    font-size: 12px;
-    color: var(--text2);
-    font-family: var(--mono);
-  }
-
-  .perm-badge {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 1px 6px;
-    border-radius: 2px;
-    margin-right: 4px;
-    margin-top: 4px;
-  }
-
+  .role-name { font-family: var(--mono); font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .role-detail { font-size: 12px; color: var(--text2); font-family: var(--mono); margin-bottom: 4px; }
+  .perm-badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 1px 6px; border-radius: 2px; margin-right: 4px; margin-top: 4px; }
   .p-read { background: rgba(59,158,255,0.15); color: var(--accent); border: 1px solid rgba(59,158,255,0.3); }
   .p-write { background: rgba(255,184,48,0.15); color: var(--warn); border: 1px solid rgba(255,184,48,0.3); }
   .p-delete { background: rgba(255,79,79,0.15); color: var(--danger); border: 1px solid rgba(255,79,79,0.3); }
   .p-admin { background: rgba(0,229,160,0.15); color: var(--accent2); border: 1px solid rgba(0,229,160,0.3); }
 
-  /* Log */
-  .log-box {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 12px;
-    height: 200px;
-    overflow-y: auto;
-    font-family: var(--mono);
-    font-size: 12px;
-    line-height: 1.8;
-  }
-
+  /* LOG */
+  .log-box { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 12px; height: 220px; overflow-y: auto; font-family: var(--mono); font-size: 12px; line-height: 1.8; }
   .log-box::-webkit-scrollbar { width: 4px; }
   .log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
   .log-ok { color: var(--accent2); }
   .log-block { color: var(--danger); }
   .log-ts { color: var(--text3); margin-right: 8px; }
 
-  .alert-box {
-    background: rgba(255,79,79,0.05);
-    border: 1px solid rgba(255,79,79,0.2);
-    border-radius: 3px;
-    padding: 12px;
-    max-height: 140px;
-    overflow-y: auto;
-    font-family: var(--mono);
-    font-size: 12px;
-    line-height: 1.8;
-    color: var(--danger);
-  }
-
+  /* ALERTS */
+  .alert-box { background: rgba(255,79,79,0.05); border: 1px solid rgba(255,79,79,0.2); border-radius: 3px; padding: 12px; max-height: 160px; overflow-y: auto; font-family: var(--mono); font-size: 12px; line-height: 1.8; color: var(--danger); }
   .no-alerts { color: var(--text3); }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
-  .btn-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
+  /* POLICY TABLE */
+  .policy-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+  .policy-table th { text-align: left; padding: 8px 10px; color: var(--text3); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .policy-table td { padding: 8px 10px; border-bottom: 1px solid rgba(99,179,255,0.06); color: var(--text2); vertical-align: middle; }
+  .policy-table tr:hover td { background: var(--surface2); }
+  .policy-table .status-on { color: var(--accent2); }
+  .policy-table .status-off { color: var(--danger); }
 
-  /* Blinking cursor */
+  /* RISK METER */
+  .risk-bar-wrap { margin-bottom: 10px; }
+  .risk-bar-label { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .risk-bar-bg { background: var(--surface2); border-radius: 2px; height: 6px; overflow: hidden; }
+  .risk-bar-fill { height: 6px; border-radius: 2px; transition: width 0.4s; }
+
+  /* USER TABLE */
+  .user-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
+  .user-row:last-child { border-bottom: none; }
+  .user-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; display: inline-block; }
+
+  /* ANIMATIONS */
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  .cursor {
-    display: inline-block;
-    width: 8px;
-    height: 14px;
-    background: var(--accent);
-    animation: blink 1s infinite;
-    vertical-align: middle;
-  }
-
-  /* Pulse animation for new log entries */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateX(-4px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
+  .cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); animation: blink 1s infinite; vertical-align: middle; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: translateX(0); } }
   .new-entry { animation: fadeIn 0.2s ease; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); animation: pulse 1.5s infinite; margin-right: 6px; vertical-align: middle; }
 
-  /* Admin modal overlay */
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(2px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--accent2);
-    border-top: 2px solid var(--accent2);
-    border-radius: 4px;
-    padding: 28px;
-    width: 360px;
-  }
-
-  .modal h2 {
-    font-family: var(--mono);
-    font-size: 14px;
-    letter-spacing: 2px;
-    color: var(--accent2);
-    margin-bottom: 16px;
-    text-transform: uppercase;
-  }
-
-  .modal p {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text2);
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
+  /* MODAL */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(2px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+  .modal { background: var(--surface); border: 1px solid var(--accent2); border-top: 2px solid var(--accent2); border-radius: 4px; padding: 28px; width: 400px; }
+  .modal h2 { font-family: var(--mono); font-size: 14px; letter-spacing: 2px; color: var(--accent2); margin-bottom: 16px; text-transform: uppercase; }
+  .modal p { font-family: var(--mono); font-size: 12px; color: var(--text2); padding: 8px 0; border-bottom: 1px solid var(--border); }
   .modal p:last-of-type { border-bottom: none; }
-
   .modal .btn-row { margin-top: 16px; }
+  select option { background: var(--surface); color: var(--text); }
 
-  select option {
-    background: var(--surface);
-    color: var(--text);
-  }
+  /* CONFIRM MODAL */
+  .confirm-modal { background: var(--surface); border: 1px solid var(--danger); border-top: 2px solid var(--danger); border-radius: 4px; padding: 28px; width: 360px; }
+  .confirm-modal h2 { font-family: var(--mono); font-size: 14px; color: var(--danger); margin-bottom: 12px; }
+  .confirm-modal p { font-family: var(--mono); font-size: 12px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
+
+  /* AUDIT */
+  .audit-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .filter-btn { font-family: var(--mono); font-size: 11px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 2px; background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.f-block.active { border-color: var(--danger); color: var(--danger); }
+  .filter-btn.f-risk.active { border-color: var(--warn); color: var(--warn); }
+
+  .mini-chart { display: flex; align-items: flex-end; gap: 3px; height: 48px; margin-top: 8px; }
+  .mini-bar { flex: 1; border-radius: 1px 1px 0 0; min-height: 2px; transition: height 0.3s; }
+
+  .scrollable { max-height: 320px; overflow-y: auto; }
+  .scrollable::-webkit-scrollbar { width: 4px; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -405,16 +180,18 @@
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-card">
-    <div class="brand">// SYSTEM</div>
+    <div class="brand">// SYSTEM ACCESS</div>
     <h1>RBAC Firewall <span class="cursor"></span></h1>
+    <div class="subtitle">Multi-Tenant SaaS Security Layer v2.4</div>
     <label>Username</label>
     <input type="text" id="username" placeholder="operator@tenant.a">
     <label>Password</label>
     <input type="password" id="password" placeholder="••••••••">
-    <button class="btn full" onclick="login()">Authenticate →</button>
-    <div style="margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--text3)">
-      Multi-Tenant SaaS Security Layer v2.4
+    <div class="login-hint">
+      Any username + password grants access.<br>
+      Try: admin@tenant.a / any password
     </div>
+    <button class="btn full" onclick="login()">Authenticate →</button>
   </div>
 </div>
 
@@ -426,86 +203,190 @@
       <div class="brand">// RBAC FIREWALL SYSTEM</div>
       <h1>Security Control Dashboard</h1>
     </div>
-    <button class="btn danger-btn" onclick="logout()">↩ Logout</button>
+    <div class="topbar-right">
+      <span class="user-badge" id="userBadge">—</span>
+      <button class="btn danger-btn" onclick="confirmBack()">← Back</button>
+    </div>
   </div>
 
-  <!-- Stats -->
+  <!-- Stats row -->
   <div class="stats">
-    <div class="stat-card s-allow">
-      <div class="stat-num" id="sAllow">0</div>
-      <div class="stat-label">Requests Allowed</div>
-    </div>
-    <div class="stat-card s-block">
-      <div class="stat-num" id="sBlock">0</div>
-      <div class="stat-label">Requests Blocked</div>
-    </div>
-    <div class="stat-card s-risk">
-      <div class="stat-num" id="sRisk">0</div>
-      <div class="stat-label">Risk Events</div>
+    <div class="stat-card s-allow"><div class="stat-num" id="sAllow">0</div><div class="stat-label">Allowed</div></div>
+    <div class="stat-card s-block"><div class="stat-num" id="sBlock">0</div><div class="stat-label">Blocked</div></div>
+    <div class="stat-card s-risk"><div class="stat-num" id="sRisk">0</div><div class="stat-label">Risk Events</div></div>
+    <div class="stat-card s-total"><div class="stat-num" id="sTotal">0</div><div class="stat-label">Total Requests</div></div>
+    <div class="stat-card s-info"><div class="stat-num" id="sTenants">2</div><div class="stat-label">Tenants</div></div>
+    <div class="stat-card s-rate"><div class="stat-num" id="sRate">0%</div><div class="stat-label">Block Rate</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('simulator')">Simulator</button>
+    <button class="tab" onclick="switchTab('roles')">Role Hierarchy</button>
+    <button class="tab" onclick="switchTab('audit')">Audit Log</button>
+    <button class="tab" onclick="switchTab('policy')">Policies</button>
+    <button class="tab" onclick="switchTab('users')">Users</button>
+  </div>
+
+  <!-- TAB: Simulator -->
+  <div class="tab-panel active" id="tab-simulator">
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-title">// Request Simulator <span><span class="live-dot"></span>LIVE</span></div>
+        <label>User Identity</label>
+        <select id="uSel">
+          <option>Alice (Tenant A - User)</option>
+          <option>Bob (Tenant A - Manager)</option>
+          <option>Eve (Tenant B - Guest)</option>
+          <option>Admin (Tenant A - Admin)</option>
+          <option>Carlos (Tenant B - Admin)</option>
+          <option>Diana (Tenant A - Manager)</option>
+        </select>
+        <label>Action</label>
+        <select id="aSel">
+          <option>read:data</option>
+          <option>write:data</option>
+          <option>delete:data</option>
+          <option>admin:panel</option>
+          <option>export:report</option>
+          <option>read:audit</option>
+        </select>
+        <label>Target Resource</label>
+        <select id="rSel">
+          <option>customer-records</option>
+          <option>financial-data</option>
+          <option>system-config</option>
+          <option>user-profiles</option>
+          <option>audit-logs</option>
+        </select>
+        <div class="btn-row">
+          <button class="btn" onclick="sendReq()">Send Request</button>
+          <button class="btn success-btn" onclick="runRandom()">Random →</button>
+          <button class="btn warn-btn" onclick="runBurst()">Burst x10</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">// Risk Analysis</div>
+        <div id="riskDisplay">
+          <div style="color:var(--text3);font-family:var(--mono);font-size:12px;">Send a request to see risk analysis.</div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="panel-title" style="margin-top:8px">// Activity (last 10)</div>
+          <div class="mini-chart" id="miniChart"></div>
+        </div>
+      </div>
+      <div class="panel full">
+        <div class="panel-title">// Live Access Log <span id="logCount">0 entries</span></div>
+        <div class="log-box" id="log"><span style="color:var(--text3)">Awaiting requests...</span></div>
+      </div>
+      <div class="panel full">
+        <div class="panel-title">// Security Alerts <span id="alertCount">0 alerts</span></div>
+        <div class="alert-box" id="alerts"><span class="no-alerts">No alerts detected.</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="grid">
-
-    <!-- Simulator -->
-    <div class="panel">
-      <div class="panel-title">// Request Simulator</div>
-      <label>User Identity</label>
-      <select id="uSel">
-        <option>Alice (Tenant A - User)</option>
-        <option>Bob (Tenant A - Manager)</option>
-        <option>Eve (Tenant B - Guest)</option>
-        <option>Admin (Tenant A - Admin)</option>
-      </select>
-      <label>Action</label>
-      <select id="aSel">
-        <option>read:data</option>
-        <option>write:data</option>
-        <option>delete:data</option>
-        <option>admin:panel</option>
-      </select>
-      <div class="btn-row">
-        <button class="btn" onclick="sendReq()">Send Request</button>
-        <button class="btn success-btn" onclick="runRandom()">Random →</button>
+  <!-- TAB: Roles -->
+  <div class="tab-panel" id="tab-roles">
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-title">// Tenant A — Role Hierarchy</div>
+        <div id="rolesA"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">// Tenant B — Role Hierarchy</div>
+        <div id="rolesB"></div>
+      </div>
+      <div class="panel full">
+        <div class="panel-title">// Permission Matrix</div>
+        <table class="policy-table">
+          <thead><tr><th>Role</th><th>Tenant</th><th>Read</th><th>Write</th><th>Delete</th><th>Admin</th><th>Level</th></tr></thead>
+          <tbody id="permMatrix"></tbody>
+        </table>
       </div>
     </div>
-
-    <!-- Role Hierarchy -->
-    <div class="panel">
-      <div class="panel-title">// Role Hierarchy</div>
-      <label>Tenant</label>
-      <select id="tSel" onchange="renderRoles()">
-        <option>Tenant-A</option>
-        <option>Tenant-B</option>
-      </select>
-      <div id="roles"></div>
-    </div>
-
-    <!-- Access Log -->
-    <div class="panel full">
-      <div class="panel-title">// Access Log</div>
-      <div class="log-box" id="log">
-        <span style="color:var(--text3)">Awaiting requests...</span>
-      </div>
-    </div>
-
-    <!-- Alerts -->
-    <div class="panel full">
-      <div class="panel-title">// Security Alerts</div>
-      <div class="alert-box" id="alerts">
-        <span class="no-alerts">No alerts detected.</span>
-      </div>
-    </div>
-
   </div>
+
+  <!-- TAB: Audit -->
+  <div class="tab-panel" id="tab-audit">
+    <div class="panel full">
+      <div class="panel-title">// Full Audit Trail <span id="auditTotal">0 records</span></div>
+      <div class="audit-filter">
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('allow',this)">Allowed</button>
+        <button class="filter-btn f-block" onclick="setFilter('block',this)">Blocked</button>
+        <button class="filter-btn f-risk" onclick="setFilter('risk',this)">Risk Only</button>
+        <button class="filter-btn" onclick="clearAudit()">Clear Log</button>
+      </div>
+      <div class="log-box scrollable" id="auditLog" style="height:400px"><span style="color:var(--text3)">No records yet.</span></div>
+    </div>
+  </div>
+
+  <!-- TAB: Policy -->
+  <div class="tab-panel" id="tab-policy">
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-title">// Active Policies</div>
+        <table class="policy-table">
+          <thead><tr><th>Policy</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="policyTable"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-title">// Risk Thresholds</div>
+        <div id="riskBars"></div>
+      </div>
+      <div class="panel full">
+        <div class="panel-title">// Cross-Tenant Access Rules</div>
+        <table class="policy-table">
+          <thead><tr><th>From Tenant</th><th>To Tenant</th><th>Allowed Actions</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Tenant-A</td><td>Tenant-B</td><td>read:data</td><td class="status-off">DENIED</td></tr>
+            <tr><td>Tenant-B</td><td>Tenant-A</td><td>none</td><td class="status-off">DENIED</td></tr>
+            <tr><td>Tenant-A</td><td>Tenant-A</td><td>all (role-based)</td><td class="status-on">ALLOWED</td></tr>
+            <tr><td>Tenant-B</td><td>Tenant-B</td><td>all (role-based)</td><td class="status-on">ALLOWED</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Users -->
+  <div class="tab-panel" id="tab-users">
+    <div class="grid-3">
+      <div class="panel">
+        <div class="panel-title">// Tenant A Users</div>
+        <div id="usersA"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">// Tenant B Users</div>
+        <div id="usersB"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">// Session Info</div>
+        <div style="font-family:var(--mono);font-size:12px;line-height:2;color:var(--text2)">
+          <div>Session ID: <span style="color:var(--accent)" id="sessionId">—</span></div>
+          <div>Login Time: <span style="color:var(--accent)" id="loginTime">—</span></div>
+          <div>Requests Made: <span style="color:var(--accent2)" id="reqCount">0</span></div>
+          <div>Last Action: <span style="color:var(--warn)" id="lastAction">—</span></div>
+          <div>Auth Level: <span style="color:var(--accent2)">AUTHENTICATED</span></div>
+          <div>MFA: <span style="color:var(--accent2)">VERIFIED</span></div>
+          <div>IP: <span style="color:var(--text3)">192.168.1.x</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const users = {
-  "Alice (Tenant A - User)":   { tenant: "A", role: "user" },
-  "Bob (Tenant A - Manager)":  { tenant: "A", role: "manager" },
-  "Eve (Tenant B - Guest)":    { tenant: "B", role: "guest" },
-  "Admin (Tenant A - Admin)":  { tenant: "A", role: "admin" }
+  "Alice (Tenant A - User)":    { tenant: "A", role: "user",    color: "#3b9eff" },
+  "Bob (Tenant A - Manager)":   { tenant: "A", role: "manager", color: "#ffb830" },
+  "Eve (Tenant B - Guest)":     { tenant: "B", role: "guest",   color: "#3d5478" },
+  "Admin (Tenant A - Admin)":   { tenant: "A", role: "admin",   color: "#ff4f4f" },
+  "Carlos (Tenant B - Admin)":  { tenant: "B", role: "admin",   color: "#ff4f4f" },
+  "Diana (Tenant A - Manager)": { tenant: "A", role: "manager", color: "#ffb830" }
 };
 
 const tenantRoles = {
@@ -522,16 +403,26 @@ const tenantRoles = {
 };
 
 const actionLevels = {
-  "read:data": 1,
-  "write:data": 3,
-  "delete:data": 4,
-  "admin:panel": 5
+  "read:data": 1, "write:data": 3, "delete:data": 4,
+  "admin:panel": 5, "export:report": 3, "read:audit": 4
 };
 
-let cAllow = 0, cBlock = 0, cRisk = 0;
-let logLines = [], alertLines = [];
+const policies = [
+  { name: "Tenant Isolation",        enabled: true  },
+  { name: "Guest Restricted Access", enabled: true  },
+  { name: "Admin Audit Logging",     enabled: true  },
+  { name: "Cross-Tenant Read",       enabled: false },
+  { name: "Privilege Escalation Det",enabled: true  },
+  { name: "Burst Rate Limiting",     enabled: true  }
+];
 
-function getEffective(role, map, vis = new Set()) {
+let cAllow=0, cBlock=0, cRisk=0, cTotal=0;
+let logLines=[], alertLines=[], auditAll=[];
+let activityHistory=[];
+let currentFilter='all';
+let reqCount=0, lastAction='—';
+
+function getEffective(role, map, vis=new Set()) {
   if (!map[role] || vis.has(role)) return [];
   vis.add(role);
   let p = [...map[role].perms];
@@ -540,26 +431,11 @@ function getEffective(role, map, vis = new Set()) {
 }
 
 function permBadge(p) {
-  const cls = { Read: "p-read", Write: "p-write", Delete: "p-delete", Admin: "p-admin" };
-  return `<span class="perm-badge ${cls[p] || ''}">${p}</span>`;
+  const cls = { Read:"p-read", Write:"p-write", Delete:"p-delete", Admin:"p-admin" };
+  return `<span class="perm-badge ${cls[p]||''}">${p}</span>`;
 }
 
-function renderRoles() {
-  const t = document.getElementById("tSel").value.replace("Tenant-", "");
-  const map = tenantRoles[t];
-  let html = "";
-  for (let role in map) {
-    const eff = getEffective(role, map);
-    const cls = "r-" + role;
-    html += `
-      <div class="role-box ${cls}">
-        <div class="role-name">${role.toUpperCase()}</div>
-        <div class="role-detail">inherits: ${map[role].inherits.join(", ") || "—"} &nbsp;|&nbsp; level: ${map[role].level}</div>
-        <div>${eff.map(permBadge).join("") || '<span style="color:var(--text3);font-size:11px;font-family:var(--mono)">no permissions</span>'}</div>
-      </div>`;
-  }
-  document.getElementById("roles").innerHTML = html;
-}
+function ts() { return new Date().toLocaleTimeString("en-US",{hour12:false}); }
 
 function detect(role, action, tenant) {
   const map = tenantRoles[tenant];
@@ -567,110 +443,269 @@ function detect(role, action, tenant) {
   const req = actionLevels[action] || 0;
   const eff = getEffective(role, map);
   const direct = map[role]?.perms || [];
-  let score = 0, reasons = [];
-
-  if (req > lvl) { score += 60; reasons.push("insufficient privilege"); }
-  if (!direct.includes("Delete") && eff.includes("Delete") && role !== "admin") {
-    score += 30; reasons.push("delete via inheritance");
-  }
-  if (role === "guest" && req > 0) { score += 20; reasons.push("guest → protected resource"); }
-  if (action === "admin:panel" && role !== "admin") { score += 40; reasons.push("admin panel escalation attempt"); }
-
+  let score=0, reasons=[];
+  if (req > lvl)          { score += 60; reasons.push("insufficient privilege"); }
+  if (!direct.includes("Delete") && eff.includes("Delete") && role!=="admin") { score += 30; reasons.push("delete via inheritance"); }
+  if (role==="guest" && req>0)             { score += 20; reasons.push("guest → protected resource"); }
+  if (action==="admin:panel" && role!=="admin") { score += 40; reasons.push("admin panel escalation attempt"); }
+  if (action==="delete:data" && role==="user")  { score += 50; reasons.push("user attempting delete"); }
   return { allowed: req <= lvl, score, reasons };
 }
 
-function ts() {
-  return new Date().toLocaleTimeString("en-US", { hour12: false });
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names=['simulator','roles','audit','policy','users'];
+    t.classList.toggle('active', names[i]===name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='roles') renderAllRoles();
+  if(name==='policy') renderPolicy();
+  if(name==='users') renderUsers();
+  if(name==='audit') renderAuditLog();
+}
+
+function renderAllRoles() {
+  ['A','B'].forEach(t => {
+    const map = tenantRoles[t];
+    let html = '';
+    for (let role in map) {
+      const eff = getEffective(role, map);
+      html += `<div class="role-box r-${role}">
+        <div class="role-name">${role.toUpperCase()}</div>
+        <div class="role-detail">inherits: ${map[role].inherits.join(', ')||'—'} &nbsp;|&nbsp; level: ${map[role].level}</div>
+        <div>${eff.map(permBadge).join('')||'<span style="color:var(--text3);font-size:11px;font-family:var(--mono)">no permissions</span>'}</div>
+      </div>`;
+    }
+    document.getElementById('roles'+t).innerHTML = html;
+  });
+
+  let matrixHTML = '';
+  ['A','B'].forEach(t => {
+    const map = tenantRoles[t];
+    for (let role in map) {
+      const eff = getEffective(role, map);
+      const has = p => eff.includes(p) ? '<span class="status-on">✔</span>' : '<span class="status-off">✖</span>';
+      matrixHTML += `<tr>
+        <td>${role}</td><td>Tenant-${t}</td>
+        <td>${has('Read')}</td><td>${has('Write')}</td><td>${has('Delete')}</td><td>${has('Admin')}</td>
+        <td>${map[role].level}</td>
+      </tr>`;
+    }
+  });
+  document.getElementById('permMatrix').innerHTML = matrixHTML;
+}
+
+function renderPolicy() {
+  let html = '';
+  policies.forEach((p,i) => {
+    html += `<tr>
+      <td>${p.name}</td>
+      <td class="${p.enabled?'status-on':'status-off'}">${p.enabled?'ACTIVE':'DISABLED'}</td>
+      <td><button class="filter-btn" onclick="togglePolicy(${i})">${p.enabled?'Disable':'Enable'}</button></td>
+    </tr>`;
+  });
+  document.getElementById('policyTable').innerHTML = html;
+
+  const thresholds = [
+    { label:'Low Risk',    val:20, color:'#3b9eff' },
+    { label:'Medium Risk', val:40, color:'#ffb830' },
+    { label:'High Risk',   val:70, color:'#ff4f4f' }
+  ];
+  document.getElementById('riskBars').innerHTML = thresholds.map(t => `
+    <div class="risk-bar-wrap">
+      <div class="risk-bar-label"><span>${t.label}</span><span style="color:${t.color}">${t.val}</span></div>
+      <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:${t.val}%;background:${t.color}"></div></div>
+    </div>`).join('');
+}
+
+function togglePolicy(i) {
+  policies[i].enabled = !policies[i].enabled;
+  renderPolicy();
+}
+
+function renderUsers() {
+  const roleColor = { admin:'#ff4f4f', manager:'#ffb830', user:'#3b9eff', guest:'#3d5478' };
+  ['A','B'].forEach(t => {
+    const list = Object.entries(users).filter(([,v])=>v.tenant===t);
+    document.getElementById('users'+t).innerHTML = list.map(([name,u])=>`
+      <div class="user-row">
+        <div><span class="user-dot" style="background:${roleColor[u.role]}"></span>${name.split(' ')[0]}</div>
+        <span class="perm-badge p-${u.role==='admin'?'admin':u.role==='manager'?'write':u.role==='user'?'read':'delete'}">${u.role}</span>
+      </div>`).join('');
+  });
+}
+
+function renderAuditLog() {
+  document.getElementById('auditTotal').textContent = auditAll.length + ' records';
+  const filtered = currentFilter==='all' ? auditAll
+    : currentFilter==='allow' ? auditAll.filter(e=>e.type==='allow')
+    : currentFilter==='block' ? auditAll.filter(e=>e.type==='block')
+    : auditAll.filter(e=>e.risk);
+  document.getElementById('auditLog').innerHTML = filtered.length
+    ? filtered.join('')
+    : '<span style="color:var(--text3)">No records match filter.</span>';
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAuditLog();
+}
+
+function clearAudit() {
+  auditAll=[];
+  renderAuditLog();
+}
+
+function updateMiniChart() {
+  const bars = activityHistory.slice(-10);
+  document.getElementById('miniChart').innerHTML = bars.map(b=>
+    `<div class="mini-bar" style="background:${b?'var(--accent2)':'var(--danger)'};height:${b?'100':'40'}%"></div>`
+  ).join('');
+}
+
+function updateStats() {
+  document.getElementById('sAllow').textContent = cAllow;
+  document.getElementById('sBlock').textContent = cBlock;
+  document.getElementById('sRisk').textContent  = cRisk;
+  document.getElementById('sTotal').textContent = cTotal;
+  document.getElementById('reqCount').textContent = reqCount;
+  document.getElementById('lastAction').textContent = lastAction;
+  const rate = cTotal ? Math.round((cBlock/cTotal)*100) : 0;
+  document.getElementById('sRate').textContent = rate + '%';
+}
+
+function showRiskAnalysis(r, userKey, action, resource) {
+  const u = users[userKey];
+  const scoreColor = r.score>60?'var(--danger)':r.score>30?'var(--warn)':'var(--accent2)';
+  document.getElementById('riskDisplay').innerHTML = `
+    <div style="font-family:var(--mono);font-size:12px;line-height:2">
+      <div>User: <span style="color:var(--accent)">${userKey.split(' ')[0]}</span></div>
+      <div>Tenant: <span style="color:var(--accent)">Tenant-${u.tenant}</span> &nbsp;|&nbsp; Role: <span style="color:var(--accent)">${u.role}</span></div>
+      <div>Action: <span style="color:var(--warn)">${action}</span></div>
+      <div>Resource: <span style="color:var(--text2)">${resource}</span></div>
+      <div>Decision: <span style="color:${r.allowed?'var(--accent2)':'var(--danger)'};font-weight:700">${r.allowed?'✔ ALLOWED':'✖ BLOCKED'}</span></div>
+      <div>Risk Score: <span style="color:${scoreColor};font-weight:700">${r.score}</span></div>
+      ${r.reasons.length?`<div style="color:var(--text3);margin-top:4px">Flags: ${r.reasons.join(', ')}</div>`:''}
+    </div>`;
 }
 
 function addLog(cls, msg) {
   logLines.unshift(`<div class="new-entry ${cls}"><span class="log-ts">[${ts()}]</span>${msg}</div>`);
   if (logLines.length > 60) logLines.pop();
-  document.getElementById("log").innerHTML = logLines.join("");
+  document.getElementById('log').innerHTML = logLines.join('');
+  document.getElementById('logCount').textContent = logLines.length + ' entries';
 }
 
 function addAlert(msg) {
   alertLines.unshift(`<div class="new-entry"><span class="log-ts">[${ts()}]</span>${msg}</div>`);
   if (alertLines.length > 20) alertLines.pop();
-  document.getElementById("alerts").innerHTML = alertLines.join("");
-}
-
-function updateStats() {
-  document.getElementById("sAllow").textContent = cAllow;
-  document.getElementById("sBlock").textContent = cBlock;
-  document.getElementById("sRisk").textContent = cRisk;
+  document.getElementById('alerts').innerHTML = alertLines.join('');
+  document.getElementById('alertCount').textContent = alertLines.length + ' alerts';
 }
 
 function processReq(userKey, action) {
   const u = users[userKey];
+  const resource = document.getElementById('rSel').value;
   const r = detect(u.role, action, u.tenant);
-  const shortUser = userKey.split(" ")[0];
+  const shortUser = userKey.split(' ')[0];
+  cTotal++; reqCount++; lastAction = action;
+  activityHistory.push(r.allowed);
+  if (activityHistory.length > 20) activityHistory.shift();
+
+  const auditEntry = `<div class="new-entry ${r.allowed?'log-ok':'log-block'}"><span class="log-ts">[${ts()}]</span> ${r.allowed?'✔ ALLOW':'✖ BLOCK'} &nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action} on ${resource}</div>`;
 
   if (r.allowed) {
     cAllow++;
-    addLog("log-ok", ` ✔ ALLOW &nbsp;&nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action}`);
-    if (u.role === "admin" && action === "admin:panel") {
-      showAdminPanel();
-    }
+    addLog('log-ok', ` ✔ ALLOW &nbsp;&nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action} on ${resource}`);
+    if (u.role==='admin' && action==='admin:panel') showAdminPanel();
   } else {
     cBlock++;
-    addLog("log-block", ` ✖ BLOCK &nbsp;&nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action}`);
+    addLog('log-block', ` ✖ BLOCK &nbsp;&nbsp; ${shortUser} [${u.tenant}/${u.role}] → ${action} on ${resource}`);
   }
+
+  const auditObj = { html: auditEntry, type: r.allowed?'allow':'block', risk: r.score>40 };
+  auditAll.unshift(auditEntry);
 
   if (r.score > 40) {
     cRisk++;
-    addAlert(` ⚠ RISK:${r.score} — ${shortUser}: ${r.reasons.join("; ")}`);
+    addAlert(` ⚠ RISK:${r.score} — ${shortUser}: ${r.reasons.join('; ')}`);
   }
 
+  showRiskAnalysis(r, userKey, action, resource);
+  updateMiniChart();
   updateStats();
 }
 
-function sendReq() {
-  processReq(document.getElementById("uSel").value, document.getElementById("aSel").value);
-}
+function sendReq() { processReq(document.getElementById('uSel').value, document.getElementById('aSel').value); }
 
 function runRandom() {
   const uKeys = Object.keys(users);
-  const acts = Object.keys(actionLevels);
-  processReq(
-    uKeys[Math.floor(Math.random() * uKeys.length)],
-    acts[Math.floor(Math.random() * acts.length)]
-  );
+  const acts  = Object.keys(actionLevels);
+  processReq(uKeys[Math.floor(Math.random()*uKeys.length)], acts[Math.floor(Math.random()*acts.length)]);
+}
+
+function runBurst() {
+  for (let i=0; i<10; i++) setTimeout(runRandom, i*120);
 }
 
 function showAdminPanel() {
-  const o = document.createElement("div");
-  o.className = "overlay";
-  o.innerHTML = `
-    <div class="modal">
-      <h2>// Admin Control Panel</h2>
-      <p>✔ View audit logs</p>
-      <p>✔ Manage roles & permissions</p>
-      <p>✔ Detect privilege escalations</p>
-      <p>✔ Cross-tenant access control</p>
-      <p>✔ System configuration</p>
-      <div class="btn-row">
-        <button class="btn success-btn" onclick="this.closest('.overlay').remove()">Close Panel</button>
-      </div>
-    </div>`;
+  const o = document.createElement('div');
+  o.className = 'overlay';
+  o.innerHTML = `<div class="modal">
+    <h2>// Admin Control Panel</h2>
+    <p>✔ View audit logs — ${auditAll.length} records</p>
+    <p>✔ Manage roles & permissions</p>
+    <p>✔ Detect privilege escalations — ${cRisk} detected</p>
+    <p>✔ Cross-tenant access control</p>
+    <p>✔ System configuration</p>
+    <p>✔ Total requests processed: ${cTotal}</p>
+    <div class="btn-row"><button class="btn success-btn" onclick="this.closest('.overlay').remove()">Close Panel</button></div>
+  </div>`;
   document.body.appendChild(o);
 }
 
+function confirmBack() {
+  const o = document.createElement('div');
+  o.className = 'overlay';
+  o.id = 'confirmOverlay';
+  o.innerHTML = `<div class="confirm-modal">
+    <h2>// Confirm Logout</h2>
+    <p>You are about to leave the dashboard. All session data and logs will be cleared. Are you sure?</p>
+    <div class="btn-row">
+      <button class="btn danger-btn" onclick="doBack()">Yes, Go Back</button>
+      <button class="btn" onclick="document.getElementById('confirmOverlay').remove()">Cancel</button>
+    </div>
+  </div>`;
+  document.body.appendChild(o);
+}
+
+function doBack() {
+  cAllow=0;cBlock=0;cRisk=0;cTotal=0;reqCount=0;lastAction='—';
+  logLines=[];alertLines=[];auditAll=[];activityHistory=[];
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('username').value='';
+  document.getElementById('password').value='';
+  document.querySelector('.tab.active')?.click();
+  switchTab('simulator');
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+}
+
 function login() {
-  const u = document.getElementById("username").value;
-  const p = document.getElementById("password").value;
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
   if (u && p) {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-    renderRoles();
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    document.getElementById('userBadge').textContent = u;
+    document.getElementById('sessionId').textContent = Math.random().toString(36).substr(2,9).toUpperCase();
+    document.getElementById('loginTime').textContent = new Date().toLocaleTimeString();
+    updateStats();
   }
 }
-
-function logout() {
-  location.reload();
-}
-
-renderRoles();
 </script>
 </body>
 </html>
